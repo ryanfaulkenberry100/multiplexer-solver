@@ -1,4 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
 
+#ifndef PARSE_TREE_
+#define PARSE_TREE_
+
+/**
+ * Type/function definitions for a simple syntax tree
+ */
 #define OPERATOR_MAX_ARGS 3
 
 /**
@@ -17,6 +25,8 @@ enum fType {
  */
 typedef struct node_ {
 	int isTerminal;
+	int subtreeSize; // num of nodes beneath + this one.
+	struct node_* parent;
 	union {
 		int terminalVal;
 		struct {
@@ -27,9 +37,10 @@ typedef struct node_ {
 } node;
 
 /**
- * Container for the root node of an algorithm and metadata for the parse tree.
+ * Function definitions
  */
-typedef struct algorithm_ {
-	node* root;
-	int nodeCt;
-} algorithm;
+void copyTree(node*, node*);
+node* getNode(node*, unsigned int);
+void resize(node*);
+
+#endif //PARSE_TREE_
