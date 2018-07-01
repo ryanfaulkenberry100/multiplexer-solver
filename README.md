@@ -1,12 +1,15 @@
 # multiplexer-solver
 A genetic algorithm which produces lisp-like functions that map a given multiplexer's input configuration to a correct output configuration. A population member's fitness is calculated by how many of the possible multiplexer states it solves correctly, and the functions with the greatest fitness are the most likely to be copied (wholly or partially) to the next generation of functions.
 
-For example, suppose we're using a 2x4 multiplexer, and we have the following population member: 
+<h3>Example</h3>
+Suppose we're using a 2x4 multiplexer, and we have the following population member:
+
 ```
 (if (and i[0] o[1])
     o[3]
     o[2])
 ```
+
 which says "If input line 0 and output line 1 are both true, then return output line 3, otherwise return output line 2 (where greater numbered lines are the least significant).
 
 We determine this member's fitness by executing every possible multiplexer state on the population member, and for every case that returns "1" one point is added to the member's fitness.
