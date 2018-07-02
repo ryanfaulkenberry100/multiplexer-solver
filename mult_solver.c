@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 #include "mult_solver.h"
 #include "syntax_tree.h"
 
@@ -30,6 +34,16 @@ void initMulTable(multiplexer* mulTable) {
 	int i;
 	for (i=0; i<NUM_CONFIGURATIONS; i++) {
 		initMul(mulTable+i, i);
+	}
+}
+
+/**
+ * Frees the memory stored in the population array
+ */
+void freePop(node* population) {
+
+	for (int i=0; i < POP_SIZE; i++) {
+		freeTree(population + i);
 	}
 }
 
@@ -354,7 +368,5 @@ void getNextGen(node* population, node* offspring, int* fitness) {
 
 		offspring[i] = *child1;
 		offspring[(POP_SIZE + numCopied) / 2 + i] = *child2;
-
-		//todo FREE
 	}
 }

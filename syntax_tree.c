@@ -44,6 +44,30 @@ node* copyTree(node* src, node* parent) {
 	return dest;
 }
 
+/**
+ * Deletes n and all nodes beneath it
+ */
+void freeTree(node* n) {
+
+	if (!n->isTerminal) {
+		switch (n->type) {
+		case NOT:
+			freeTree(n->children[0]);
+			break;
+		case AND:
+		case OR:
+			freeTree(n->children[0]);
+			freeTree(n->children[1]);
+			break;
+		case IF:
+			freeTree(n->children[0]);
+			freeTree(n->children[1]);
+			freeTree(n->children[2]);
+			break;
+		}
+	}
+	free(n);
+}
 
 
 /**

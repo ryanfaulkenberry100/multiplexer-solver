@@ -85,6 +85,7 @@ int main(int argc, char** argv) {
 		computePopulationFitness(population, mulTable, fitness);
 		getNextGen(population, offspring, fitness);
 		printInfo(population, offspring);
+		freePop(population);
 	}
 	return 0;
 }
