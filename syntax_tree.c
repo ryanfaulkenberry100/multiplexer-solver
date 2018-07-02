@@ -4,15 +4,47 @@
 #include "inc/syntax_tree.h"
 
 /**
- * Copies a tree from node src to node dest
+ * Returns a copy of the provided src tree
  */
-void copyTree(node* src, node* dest) {
+node* copyTree(node* src, node* parent) {
 
-	node new;
+	node* dest = (node*)malloc(sizeof(node));;
+	dest->parent = parent;
+
 	if (src->isTerminal) {
+		dest->isTerminal = 0;
+		dest->terminalVal = src->terminalVal;
+		dest->subtreeSize = 1;
+	} else {
+		dest->isTerminal = 1;
+		dest->type = src->type;
+		switch (dest->type) {
+		case NOT:
+			dest->children[0] = copyTree(src->children[0], src);
+			dest->subtreeSize = dest->children[0]->subtreeSize + 1;
+			break;
+		case AND:
+		case OR:
+			dest->children[0] = copyTree(src->children[0], src);
+			dest->children[1] = copyTree(src->children[1], src);
+			dest->subtreeSize = dest->children[0]->subtreeSize +
+								dest->children[1]->subtreeSize + 1;
 
+			break;
+		case IF:
+			dest->children[0] = copyTree(src->children[0], src);
+			dest->children[1] = copyTree(src->children[1], src);
+			dest->children[2] = copyTree(src->children[2], src);
+			dest->subtreeSize = dest->children[0]->subtreeSize +
+								dest->children[1]->subtreeSize +
+								dest->children[2]->subtreeSize + 1;
+			break;
+		}
 	}
+	return dest;
 }
+
+
 
 /**
  * Given some node of the tree whose size has changed, updates the

@@ -76,58 +76,58 @@ void divide3(unsigned int* src, unsigned int* dest1, unsigned int* dest2) {
 /**
  * Returns a randomly generated syntax tree with n nodes.
  */
-node* generateTree(unsigned int r) {
+node* generateTree(unsigned int r, node* parent) {
 
 	node* n = (node*)malloc(sizeof(node));
 	int type;
 	unsigned int s, t;
 
-	n->subtreeSize = r;
-	n->isTerminal = 0;
-	n->parent = NULL;
+    n->subtreeSize = r;
+    n->isTerminal = 0;
+    n->parent = parent;
 
-	switch (n->subtreeSize) {
-	case 1:
-		n->isTerminal = 1;
+    switch (n->subtreeSize) {
+    case 1:
+    	n->isTerminal = 1;
 		n->terminalVal = rand() % MULTIPLEX_IN_SZ + MULTIPLEX_OUT_SZ;
 		return n;
-	case 2:
-		n->type = NOT;
-		n->children[0] = generateTree(1);
-		break;
-	case 3:
-		n->type = rand() % 2 ? AND : OR;
-		n->children[0] = generateTree(1);
-		n->children[1] = generateTree(1);
-		break;
-	default:
-		r--;
-		type = rand() % 3;
-		switch (type) {
-		case 0:
-			n->type = NOT;
-			n->children[0] = generateTree(r);
-			break;
+    case 2:
+    	n->type = NOT;
+    	n->children[0] = generateTree(1, n);
+    	break;
+    case 3:
+    	n->type = rand() % 2 ? AND : OR;
+    	n->children[0] = generateTree(1, n);
+    	n->children[1] = generateTree(1, n);
+    	break;
+    default:
+    	r--;
+    	type = rand() % 3;
+    	switch (type) {
+    	case 0:
+    		n->type = NOT;
+    		n->children[0] = generateTree(r, n);
+    		break;
 		case 1:
 			n->type = rand() % 2 ? AND : OR;
 			divide2(&r, &s);
-			n->children[0] = generateTree(r);
-			n->children[1] = generateTree(s);
+			n->children[0] = generateTree(r, n);
+			n->children[1] = generateTree(s, n);
 			break;
 		case 2:
 			n->type = IF;
 			divide3(&r, &s, &t);
-			n->children[0] = generateTree(r);
-			n->children[1] = generateTree(s);
-			n->children[2] = generateTree(t);
+			n->children[0] = generateTree(r, n);
+			n->children[1] = generateTree(s, n);
+			n->children[2] = generateTree(t, n);
 			break;
-			break;
-		}
-		break;
-	}
-	fprintf(stderr, "Tree generation failed\n");
-	return NULL;
+    	}
+    	break;
+    }
+    fprintf(stderr, "Tree generation failed\n");
+    return NULL;
 }
+
 
 /**
  * Returns an array of randomly generated syntax trees.
@@ -135,7 +135,7 @@ node* generateTree(unsigned int r) {
 void generatePopulation(node* population) {
 
 	for (int i=0; i < POP_SIZE; i++) {
-		population[i] = *(generateTree((rand() % (MAX_TREE_SIZE - 1)) + 1));
+		population[i] = *(generateTree((rand() % (MAX_TREE_SIZE - 1)) + 1, NULL));
 	}
 }
 
@@ -264,7 +264,7 @@ int duplicate(node* population, node* offspring, float* probTable, int* fitness)
 			(POP_SIZE / 10) + 1;
 	for (i=0; i < tenthPop; i++) {
 		index = weightedSelect(population, probTable);
-		copyTree((node*)(population + index), (node*)(offspring + i));
+		offspring[i] = *(copyTree(population + index, NULL));
 		fitness[index] = 0; // No longer eligible for reproduction
 	}
 	generateLookupTable(population, fitness, probTable);
@@ -342,8 +342,8 @@ void getNextGen(node* population, node* offspring, int* fitness) {
 				(POP_SIZE + numCopied) / 2 + i; //numCopied guaranteed even
 
 		// Select two parents to produce offspring
-		copyTree(&population[weightedSelect(population, probTable)], child1);
-		copyTree(&population[weightedSelect(population, probTable)], child2);
+		child1 = copyTree(&population[weightedSelect(population, probTable)], NULL);
+		child2 = copyTree(&population[weightedSelect(population, probTable)], NULL);
 
 		float r = drand48();
 		if (r < CROSSOVER_RATE) {
@@ -351,5 +351,10 @@ void getNextGen(node* population, node* offspring, int* fitness) {
 		}
 		mutate(child1);
 		mutate(child2);
+
+		offspring[i] = *child1;
+		offspring[(POP_SIZE + numCopied) / 2 + i] = *child2;
+
+		//todo FREE
 	}
 }

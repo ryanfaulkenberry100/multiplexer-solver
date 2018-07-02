@@ -38,5 +38,5 @@ void mutate(node*);
 void crossover(node*, node*);
 void getNextGen(node*, node*, int*);
 void generatePopulation(node*);
-node* generateTree(unsigned int);
+node* generateTree(unsigned int, node*);
 

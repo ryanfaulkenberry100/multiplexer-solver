@@ -16,7 +16,8 @@ enum fType {
 		AND,
 		OR,
 		NOT,
-		IF
+		IF,
+		MAX_FUNCTION_TYPES
 };
 
 /**
@@ -39,7 +40,7 @@ typedef struct node_ {
 /**
  * Function definitions
  */
-void copyTree(node*, node*);
+node* copyTree(node*, node*);
 node* getNode(node*, unsigned int);
 void resize(node*);
 

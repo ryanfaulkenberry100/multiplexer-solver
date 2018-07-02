@@ -16,7 +16,55 @@
 #include "mult_solver.h"
 
 
+void printTree(node* tree) {
 
+	printf("(");
+
+	if (tree->isTerminal) {
+		// If value < MUL_IN_SZ, this terminal is an input val, else output val
+		if (tree->terminalVal < MULTIPLEX_IN_SZ) {
+			printf("i[%d] ", tree->terminalVal);
+		} else {
+			printf("o[%d] ", tree->terminalVal - MULTIPLEX_IN_SZ);
+		}
+	}
+	switch (tree->type) {
+	case NOT:
+		printf("not (");
+		printTree(tree->children[0]);
+		printf(") ");
+		break;
+	case AND:
+		printf("and (");
+		printTree(tree->children[0]);
+		printTree(tree->children[1]);
+		printf(") ");
+		break;
+	case OR:
+		printf("or (");
+		printTree(tree->children[0]);
+		printTree(tree->children[1]);
+		printf(") ");
+		break;
+	case IF:
+		printf("if (");
+		printTree(tree->children[0]);
+		printTree(tree->children[1]);
+		printTree(tree->children[2]);
+		printf(") ");
+		break;
+	}
+	printf(")");
+}
+
+void printInfo(node* population, node* offspring) {
+
+	printf("Population:\n");
+	for (int i=0; i < POP_SIZE; i++) {
+		printTree(population+i);
+		printf("\n");
+	}
+}
 
 int main(int argc, char** argv) {
 
